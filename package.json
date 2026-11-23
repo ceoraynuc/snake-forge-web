@@ -1,0 +1,9 @@
+{
+  "name": "snakeforge",
+  "version": "1.0.0",
+  "description": "Snakes and Ladders with a board editor. C engine, HTML/CSS/JS front end.",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  }
+}

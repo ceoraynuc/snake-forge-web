@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SnakeForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E4A4F'/%3E%3Cpath d='M6 24c6-2 4-8 10-8s4-8 10-8' fill='none' stroke='%23F4B223' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="top">
+    <h1 class="brand">SnakeForge</h1>
+    <button id="soundBtn" class="ghost" type="button" aria-pressed="false">Sound on</button>
+  </header>
+
+  <main class="stage">
+    <section class="boardwrap" aria-label="Game board">
+      <div class="frame">
+        <svg id="board" viewBox="0 0 1000 1000" role="group" aria-label="Snakes and ladders board, 100 squares"></svg>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Loading the board…</p>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" id="tab-play" aria-controls="view-play" aria-selected="true" data-tab="play">Play</button>
+        <button role="tab" id="tab-design" aria-controls="view-design" aria-selected="false" data-tab="design" tabindex="-1">Design</button>
+        <button role="tab" id="tab-boards" aria-controls="view-boards" aria-selected="false" data-tab="boards" tabindex="-1">Boards</button>
+        <button role="tab" id="tab-wins" aria-controls="view-wins" aria-selected="false" data-tab="wins" tabindex="-1">Wins</button>
+      </div>
+
+      <!-- PLAY -->
+      <section id="view-play" role="tabpanel" aria-labelledby="tab-play" class="view">
+        <div id="setup">
+          <h2>New game</h2>
+          <fieldset class="count">
+            <legend>Players</legend>
+            <div class="seg" id="countSeg">
+              <button type="button" data-n="2" aria-pressed="true">2</button>
+              <button type="button" data-n="3" aria-pressed="false">3</button>
+              <button type="button" data-n="4" aria-pressed="false">4</button>
+            </div>
+          </fieldset>
+          <div id="playerRows" class="rows"></div>
+          <fieldset class="rules">
+            <legend>Rules</legend>
+            <label class="check"><input type="checkbox" id="ruleExact"> Need an exact roll to land on 100</label>
+            <label class="check"><input type="checkbox" id="ruleExtra"> Roll again after a six</label>
+          </fieldset>
+          <button id="startBtn" class="primary" type="button">Start game</button>
+        </div>
+
+        <div id="live" hidden>
+          <h2>Game on</h2>
+          <ul id="playerList" class="plist"></ul>
+          <div class="rollrow">
+            <div id="die" class="die" role="img" aria-label="Die, no roll yet" data-v="0">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="rollbtns">
+              <button id="rollBtn" class="primary" type="button">Roll dice</button>
+              <button id="hintBtn" class="ghost" type="button">Hint</button>
+            </div>
+          </div>
+          <p id="hintText" class="hint" aria-live="polite"></p>
+          <button id="endBtn" class="link" type="button">End game</button>
+        </div>
+      </section>
+
+      <!-- DESIGN -->
+      <section id="view-design" role="tabpanel" aria-labelledby="tab-design" class="view" hidden>
+        <h2>Design your board</h2>
+        <p class="lead">Click a start square, then an end square. Going up makes a ladder. Going down makes a snake.</p>
+        <div class="seg wide" id="toolSeg">
+          <button type="button" data-tool="draw" aria-pressed="true">Place</button>
+          <button type="button" data-tool="remove" aria-pressed="false">Remove</button>
+        </div>
+        <div class="btnrow">
+          <button id="defaultBtn" class="ghost" type="button">Classic board</button>
+          <button id="clearBtn" class="ghost" type="button">Clear board</button>
+        </div>
+        <p id="designLock" class="notice" hidden>A game is running. End it to edit the board.</p>
+        <div id="analysis" class="analysis" aria-live="polite"></div>
+      </section>
+
+      <!-- BOARDS -->
+      <section id="view-boards" role="tabpanel" aria-labelledby="tab-boards" class="view" hidden>
+        <h2>Saved boards</h2>
+        <form id="saveForm" class="saveform">
+          <label for="saveName">Board name</label>
+          <div class="inline">
+            <input id="saveName" maxlength="30" autocomplete="off" placeholder="my-board" pattern="[A-Za-z0-9_\-]+">
+            <button class="primary" type="submit">Save</button>
+          </div>
+        </form>
+        <ul id="boardList" class="blist"></ul>
+      </section>
+
+      <!-- WINS -->
+      <section id="view-wins" role="tabpanel" aria-labelledby="tab-wins" class="view" hidden>
+        <h2>Win records</h2>
+        <ol id="recordList" class="rlist"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <dialog id="winDlg" aria-labelledby="winTitle">
+    <h2 id="winTitle"></h2>
+    <p id="winText"></p>
+    <div class="btnrow">
+      <button id="againBtn" class="primary" type="button">Play again</button>
+      <button id="closeWinBtn" class="ghost" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
